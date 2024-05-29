@@ -89,7 +89,7 @@ resource "aws_elasticache_subnet_group" "default" {
   tags        = module.this.tags
 }
 
-local {
+locals {
 
   safe_family = replace(var.elasticache_parameter_group_family, ".", "-")
 
