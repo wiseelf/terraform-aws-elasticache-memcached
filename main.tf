@@ -89,10 +89,26 @@ resource "aws_elasticache_subnet_group" "default" {
   tags        = module.this.tags
 }
 
+local {
+
+  safe_family = replace(var.elasticache_parameter_group_family, ".", "-")
+
+  parameter_group_name = (
+    var.parameter_group_name != null ? var.parameter_group_name : (
+      var.create_parameter_group
+      ?
+      "${module.this.id}-${local.safe_family}" # The name of the new parameter group to be created
+      :
+      "default.${var.elasticache_parameter_group_family}" # Default parameter group name created by AWS
+    )
+  )
+}
+
 resource "aws_elasticache_parameter_group" "default" {
-  count  = local.enabled ? 1 : 0
-  name   = module.this.id
-  family = var.elasticache_parameter_group_family
+  count       = local.enabled && var.create_parameter_group ? 1 : 0
+  name        = local.parameter_group_name
+  description = var.parameter_group_description != null ? var.parameter_group_description : "Elasticache parameter group ${local.parameter_group_name}"
+  family      = var.elasticache_parameter_group_family
 
   dynamic "parameter" {
     for_each = var.elasticache_parameters
@@ -111,7 +127,7 @@ resource "aws_elasticache_cluster" "default" {
   engine_version             = var.engine_version
   node_type                  = var.instance_type
   num_cache_nodes            = var.cluster_size
-  parameter_group_name       = join("", aws_elasticache_parameter_group.default[*].name)
+  parameter_group_name       = local.parameter_group_name
   transit_encryption_enabled = var.transit_encryption_enabled
   subnet_group_name          = local.elasticache_subnet_group_name
   # It would be nice to remove null or duplicate security group IDs, if there are any, using `compact`,
