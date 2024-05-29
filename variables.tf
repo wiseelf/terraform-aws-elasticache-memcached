@@ -4,20 +4,6 @@ variable "vpc_id" {
   description = "VPC ID"
 }
 
-variable "parameter" {
-  type = list(object({
-    name  = string
-    value = string
-  }))
-  default = [
-    {
-      name  = "max_item_size"
-      value = 10485760
-    },
-  ]
-  description = "A list of Memcached parameters to apply. Note that parameters may differ from one Memcached family to another"
-}
-
 variable "subnets" {
   type        = list(string)
   default     = []
@@ -126,6 +112,20 @@ variable "elasticache_parameter_group_family" {
   default     = "memcached1.5"
 }
 
+variable "elasticache_parameters" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
+  default = [
+    {
+      name  = "max_item_size"
+      value = 10485760
+    },
+  ]
+  description = "A list of ElastiCache parameters to apply. Note that parameters may differ from one ElastiCache family to another"
+}
+
 variable "cloudwatch_metric_alarms_enabled" {
   type        = bool
   description = "Boolean flag to enable/disable CloudWatch metrics alarms"
@@ -134,6 +134,6 @@ variable "cloudwatch_metric_alarms_enabled" {
 
 variable "transit_encryption_enabled" {
   type        = bool
-  description = "Enable encryption in-transit. Supported only with Memcached versions 1.6.12 and later, running in a VPC"
+  description = "Boolean flag to enable transit encryption (requires Memcached version 1.6.12+)"
   default     = false
 }
