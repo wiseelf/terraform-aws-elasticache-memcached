@@ -137,3 +137,21 @@ variable "transit_encryption_enabled" {
   description = "Boolean flag to enable transit encryption (requires Memcached version 1.6.12+)"
   default     = false
 }
+
+variable "create_parameter_group" {
+  type        = bool
+  default     = true
+  description = "Whether new parameter group should be created. Set to false if you want to use existing parameter group"
+}
+
+variable "parameter_group_description" {
+  type        = string
+  default     = null
+  description = "Managed by Terraform"
+}
+
+variable "parameter_group_name" {
+  type        = string
+  default     = null
+  description = "Override the default parameter group name"
+}
