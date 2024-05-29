@@ -117,6 +117,10 @@ resource "aws_elasticache_parameter_group" "default" {
       value = tostring(parameter.value.value)
     }
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_elasticache_cluster" "default" {
